@@ -1,7 +1,108 @@
-<html>
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
+<%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
+<html lang="en-CN" ng-app="app">
 <head>
-	<title text="hhh"/>
+	<meta charset="UTF-8">
+	<title>网上选课系统</title>
+	<!--jquery-->
+	<script src="js/jquery.min.js"></script>
+	<!--bootstrap-->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<script src="js/bootstrap.min.js"></script>
+	<!--angularjs-->
+	<script src="js/angular.min.js"></script>
+	<script src="js/angular-route.min.js"></script>
+	<!--highchars-->
+	<script src="js/highcharts.js"></script>
+	<script src="js/highcharts-3d.js"></script>
+	<!--person-->
+	<!-- <script src="app.js"></script> -->
+	<script src="loads/vipMan/vipMan.js"></script>
+	<script src="loads/goodsMan/inforMan.js"></script>
+	<script src="loads/cms/cms.js"></script>
+	<script src="loads/orderMan/orderMan.js"></script>
+	<script src="loads/pie/pie.js"></script>
+
+	<style type="text/css">
+		body{
+			background:url(images/1.jpg);
+		}
+		
+		.panel{
+			background:#222222;
+			color:white;
+		}
+	</style>
+	<script>
+		angular.module("app",["ngRoute","vipMan","inforMan","cms","orderMan","app.pie"])
+		.controller("mainCtrl",function($scope,$http){
+			$scope.stus=[];
+			$http.get("GetAllStu").success(function(data){
+				$scope.stus = data;
+				console.log(data);
+			});
+			$http.get("Menu").success(function(data){
+				$scope.config = data;
+			});
+			$scope.data={
+				changeTabs: function(id,event){
+					angular.element(event.currentTarget)
+						.addClass("active")
+						.siblings()
+						.removeClass("active");
+				}
+			}
+		})
+		.factory("modalService",function(){
+			return {
+				open:function(id){
+				    angular.element(
+						document.getElementById(id)
+					).modal("show");
+				},
+				close:function(id){
+					angular.element(
+						document.getElementById(id)
+					).modal("hide");
+				}
+			}
+		  });
+	</script>
+	
 </head>
-<body>
-</body>
+<body ng-controller="mainCtrl">
+	<nav class="navbar navbar-inverse">
+		<div class="navbar-header">
+			<a href="#" class="navbar-brand">
+				网上选课系统
+			</a>
+		</div>
+		<div class="navbar-btn">
+			<div class="btn-group pull-right">
+				<button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-user" > ${sessionScope.user.name}&nbsp;</span><span class="caret"></span></button>
+				<ul class="dropdown-menu">
+					<li><a href="index.jsp">退出登录</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div class="container-fluied">
+		<div class="col-xs-2">
+			<div class="panel">
+				<!--主menu-->
+				<div class="panel-heading text-center">操作菜单</div>
+				<div class="list-group">
+					<a href="{{item.url}}" class="list-group-item text-center"  ng-repeat="item in config" ng-click="data.changeTabs(item.cId,$event)">{{item.cName}}</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-10">
+			<!--内容区-->
+			<div ng-view>
+			
+			</div>
+		</div>
+	</div>
+</body> 
 </html>
